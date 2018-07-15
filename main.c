@@ -1,18 +1,26 @@
+/* 
+ * CUBE-TIMER
+ *
+ * A simple and lightweight program to record, store, list and get statistics
+ * about Rubik's Cube times.
+ *
+ */
+
 #include <stdio.h>     /* FILE           */
 #include <stdlib.h>    /* exit()         */
 #include <sys/time.h>  /* gettimeofday() */
 #include <unistd.h>    /* sleep()        */
 
 #define BUFF_SIZE 255
-#define FILE_NAME "placeholder.txt"
+#define FILE_NAME "results.txt"
 #define INSP_TIME 15
 
 typedef unsigned long long MILLSEC;
 
 void    add      ();
 void    clear    ();
-void    format   (MILLSEC, char *const);
-MILLSEC get_ms   (char *const);
+MILLSEC deformat (char *const);
+void    format   (MILLSEC, char*);
 MILLSEC get_time ();
 void    list     ();
 void	stat     ();
@@ -24,7 +32,7 @@ add()
 {
 	MILLSEC st;  /* start time  */
 	MILLSEC ft;  /* finish time */
-	char    res[BUFF_SIZE];
+	char res[10];
 
 	printf("Inspection time (%d secs)\n",INSP_TIME);
 	sleep(INSP_TIME);
@@ -47,7 +55,7 @@ clear()
 }
 
 void
-format(MILLSEC t, char *const str)
+format(MILLSEC t, char *str)
 {
 	int min;
 	int sec;
@@ -58,13 +66,32 @@ format(MILLSEC t, char *const str)
 	sec %= 60;
 	frac = t%1000;
 
-	sprintf(str,"%d:%d.%d",min,sec,frac);
+	str[0] = min<10 ? '0' : min/10;
+	str[1] = min<10 ? min+48 : min%10+48;
+	str[2] = ':';
+	str[3] = sec<10 ? '0' : sec/10+48;
+	str[4] = sec<10 ? sec+48 : sec%10+48;
+	str[5] = '.';
+	str[6] = frac/100 ? frac/100+48 : '0';
+	str[7] = frac%100/10 ? frac%100/10+48 : '0';
+	str[8] = frac%10 ? frac%10+48 : '0';
+	str[9] = '\0';
 }
 
 MILLSEC
-get_ms(char *const str)
+deformat(char *const str)
 {
+	MILLSEC time = 0;
 
+	time += (str[0]-48) * 600000;
+	time += (str[1]-48) * 60000;
+	time += (str[3]-48) * 10000;
+	time += (str[4]-48) * 1000;
+	time += (str[6]-48) * 100;
+	time += (str[7]-48) * 10;
+	time += (str[8]-48);
+
+	return time;
 }
 
 
@@ -94,23 +121,24 @@ stat()
 {
 	char    line[BUFF_SIZE];
 	MILLSEC time;
-	MILLSEC best;
-	MILLSEC sum = 0;
-	int     count = 1;
+	MILLSEC best  = 0;
+	MILLSEC sum   = 0;
+	int     count = 0;
 
 	f = fopen(FILE_NAME,"r");
 	while (fgets(line,BUFF_SIZE,f)) {
-		time = get_ms(line);
-		best = time<best ? time : best;
+		time = deformat(line);
+		best = time<best || !best ? time : best;
 		sum += time;
 		++count;
 	}
 	fclose(f);
 
 	format(best,line);
-	printf("Best time: %s",line);
+	printf("Best time: %s\n",line);
+	printf("Count: %d\n",count);
 	format(sum/count,line);
-	printf("Average:   %s",line);
+	printf("Average: %s\n",line);
 }
 
 int
