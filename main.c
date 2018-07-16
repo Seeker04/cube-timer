@@ -108,17 +108,19 @@ void
 list()
 {
 	char line[BUFF_SIZE];
-	int  i = 1;
+	int  i = 0;
 
 	f = fopen(FILE_NAME,"r");
 	while (fgets(line,BUFF_SIZE,f))
-		printf("%d. %s",i++,line);
+		printf("%d. %s",++i,line);
 	fclose(f);
 }
 
 void
 stat()
 {
+	/* TODO: Add "Average of 5" and "Average of 12" */
+
 	char    line[BUFF_SIZE];
 	MILLSEC time;
 	MILLSEC best  = 0;
@@ -134,11 +136,17 @@ stat()
 	}
 	fclose(f);
 
-	format(best,line);
-	printf("Best time: %s\n",line);
-	printf("Count: %d\n",count);
-	format(sum/count,line);
-	printf("Average: %s\n",line);
+	printf("Count:     %d\n",count);
+	if (count) {
+		format(best,line);
+		printf("Best time: %s\n",line);
+		format(sum/count,line);
+		printf("Average:   %s\n",line);
+	}
+	else {
+		printf("Best time: N/A\n");
+		printf("Average:   N/A\n");
+	}
 }
 
 int
