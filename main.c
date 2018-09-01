@@ -5,14 +5,15 @@
  * of Rubik's Cube times
  *
  * Options:
- *          -a  Add a new time
- *          -c  Clear results
- *          -l  List all results
- *          -s  Write statistics
+ *          -a, --add    Add a new time
+ *          -c, --clear  Clear results
+ *          -l, --list   List all results
+ *          -s, --stat   Write statistics
  */
 
 #include <stdio.h>     /* printf, fgets, getchar, FILE */
 #include <stdlib.h>    /* exit                         */
+#include <string.h>    /* strcmp                       */
 #include <sys/time.h>  /* gettimeofday                 */
 #include <unistd.h>    /* sleep                        */
 
@@ -23,13 +24,22 @@
 
 typedef unsigned int MILLSEC;
 
-static void    add      ();
-static void    clear    ();
-static MILLSEC deformat (char *const);
-static void    format   (MILLSEC, char*);
-static MILLSEC get_time ();
-static void    list     ();
-static void    stat     ();
+enum Action {
+	ADD,
+	CLEAR,
+	LIST,
+	STAT
+};
+
+static enum Action arg_parse (const char *const arg);
+
+static void    add       ();
+static void    clear     ();
+static MILLSEC deformat  (char *const);
+static void    format    (MILLSEC, char*);
+static MILLSEC get_time  ();
+static void    list      ();
+static void    stat      ();
 
 static FILE *f;
 
@@ -48,6 +58,16 @@ add()
 	printf("Result: %s\n",res);
 	fprintf(f = fopen(FILE_NAME,"a"),"%s\n",res);
 	fclose(f);
+}
+
+static enum Action
+arg_parse(const char *const arg)
+{
+	if (!strcmp(arg, "-a")) return ADD;
+	if (!strcmp(arg, "-c")) return CLEAR;
+	if (!strcmp(arg, "-l")) return LIST;
+	if (!strcmp(arg, "-s")) return STAT;
+	return -1;
 }
 
 static void
@@ -155,13 +175,12 @@ main(int argc, char const *argv[])
 		printf("Error: No argument given!\n");
 		exit(1);
 	}
-	switch (argv[1][1]) {
-	case 'a' : add();   break;
-	case 'c' : clear(); break;
-	case 'l' : list();  break;
-	case 's' : stat();  break;
-	default  : printf("Error: Illegal argument!\n");
-		   exit(2);
+	switch (arg_parse(argv[1])) {
+	case ADD   : add();   break;
+	case CLEAR : clear(); break;
+	case LIST  : list();  break;
+	case STAT  : stat();  break;
+	default    : printf("Error: Illegal argument!\n"); exit(2);
 	}
 	return 0;
 }
