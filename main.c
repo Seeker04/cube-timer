@@ -5,7 +5,7 @@
  * of Rubik's Cube times
  *
  * Options:
- *          -a, --add    Add a new time
+ *          -a, --add    Add new time
  *          -c, --clear  Clear results
  *          -l, --list   List all results
  *          -s, --stat   Write statistics
@@ -33,13 +33,13 @@ enum Action {
 
 static enum Action arg_parse (const char *const arg);
 
-static void    add       ();
-static void    clear     ();
-static MILLSEC deformat  (char *const);
-static void    format    (MILLSEC, char*);
-static MILLSEC get_time  ();
-static void    list      ();
-static void    stat      ();
+static void    add      ();
+static void    clear    ();
+static MILLSEC deformat (char *const);
+static void    format   (MILLSEC, char*);
+static MILLSEC get_time ();
+static void    list     ();
+static void    stat     ();
 
 static FILE *f;
 
@@ -63,10 +63,10 @@ add()
 static enum Action
 arg_parse(const char *const arg)
 {
-	if (!strcmp(arg, "-a")) return ADD;
-	if (!strcmp(arg, "-c")) return CLEAR;
-	if (!strcmp(arg, "-l")) return LIST;
-	if (!strcmp(arg, "-s")) return STAT;
+	if (!strcmp(arg, "-a") || !strcmp(arg, "--add"  )) return ADD;
+	if (!strcmp(arg, "-c") || !strcmp(arg, "--clear")) return CLEAR;
+	if (!strcmp(arg, "-l") || !strcmp(arg, "--list" )) return LIST;
+	if (!strcmp(arg, "-s") || !strcmp(arg, "--stat" )) return STAT;
 	return -1;
 }
 
