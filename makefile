@@ -1,5 +1,5 @@
 COMP = gcc
-FLAGS = -W -Wall -Wextra -pedantic -std=c99
+FLAGS = -W -Wall -Wextra -pedantic -std=c89
 SOURCES = *.c
 BIN = ctimer
 
