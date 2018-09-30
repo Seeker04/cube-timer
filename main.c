@@ -17,10 +17,13 @@
 #include <sys/time.h>  /* gettimeofday                 */
 #include <unistd.h>    /* sleep                        */
 
-#define CHAR_SHIFT 48 
+#define EXIT_NO_ARG      1
+#define EXIT_INVALID_ARG 2
+
+#define CHAR_SHIFT 48
 #define FILE_NAME  ".results.txt"
 #define INSP_TIME  15
-#define LINE_SIZE  11 
+#define LINE_SIZE  11
 
 typedef unsigned int MILLSEC;
 
@@ -173,15 +176,18 @@ main(int argc, char const *argv[])
 {
 	if (argc<2) {
 		printf("Error: No argument given!\n");
-		exit(1);
+		exit(EXIT_NO_ARG);
 	}
+
 	switch (arg_parse(argv[1])) {
 	case ADD   : add();   break;
 	case CLEAR : clear(); break;
 	case LIST  : list();  break;
 	case STAT  : stat();  break;
-	default    : printf("Error: Illegal argument!\n"); exit(2);
+	default    : printf("Error: Illegal argument!\n");
+		     exit(EXIT_INVALID_ARG);
 	}
-	return 0;
+
+	return EXIT_SUCCESS;
 }
 
